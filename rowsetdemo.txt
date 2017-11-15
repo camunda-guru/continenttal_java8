@@ -1,0 +1,41 @@
+import java.sql.*; 
+import javax.sql.*;
+import javax.sql.rowset.JdbcRowSet;
+
+import com.sun.rowset.JdbcRowSetImpl;
+
+public class RowSetEx {
+public static void main(String[] args) throws Exception {
+String userName = "root";
+String password = "root";
+String url = "jdbc:mysql://localhost/test";
+Connection con = DriverManager.getConnection(url,userName,password); 
+
+JdbcRowSet rowSet = new JdbcRowSetImpl(con);
+rowSet.setType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+
+String queryString = "SELECT * FROM student";
+rowSet.setCommand(queryString);
+rowSet.execute();
+
+rowSet.addRowSetListener(new JdbcRowSetListener());
+rowSet.next();
+if(rowSet.getInt(1)==1)  rowSet.deleteRow();
+
+while (rowSet.next()) {
+System.out.println("Reg Number: " + rowSet.getInt(1)); System.out.println("Name: " + rowSet.getString(2));
+}
+con.close(); 
+
+}}
+class JdbcRowSetListener implements RowSetListener {
+public void cursorMoved(RowSetEvent event) {
+ System.out.println("Cursor Moved");
+}
+public void rowChanged(RowSetEvent event) {
+System.out.println("Row Changed ");
+ }
+public void rowSetChanged(RowSetEvent event){}
+}
+
+
